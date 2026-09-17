@@ -1,6 +1,7 @@
 # Hệ Thống Quản Lý Siêu Thị Mini (Mini Supermarket System)
 
 **Sinh viên:** Nguyễn Ngọc Lầu — **MSSV:** 2124110129
+**Lớp:** CCQ2411D
 
 **Đồ án môn:** Lập trình Ứng dụng .NET Core
 
