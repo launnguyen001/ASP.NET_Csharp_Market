@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using API.Models;
 
@@ -5,6 +6,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")] // Định tuyến: /api/roles
     [ApiController]
+    [Authorize] // Bắt buộc phải có Token mới gọi được các API trong Controller này
     public class RolesController : ControllerBase
     {
         // Dữ liệu mẫu lưu tạm trên RAM phục vụ kiểm thử
@@ -16,6 +18,7 @@ namespace API.Controllers
 
         // 1. READ: Lấy toàn bộ danh sách vai trò (GET /api/roles)
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetAll()
         {
             return Ok(_roles);
@@ -23,6 +26,7 @@ namespace API.Controllers
 
         // 2. READ: Lấy chi tiết một vai trò theo ID (GET /api/roles/{id})
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetById(int id)
         {
             var role = _roles.FirstOrDefault(r => r.Id == id);
@@ -35,6 +39,7 @@ namespace API.Controllers
 
         // 3. CREATE: Thêm mới vai trò (POST /api/roles)
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create([FromBody] Role newRole)
         {
             if (string.IsNullOrWhiteSpace(newRole.RoleName))
@@ -50,6 +55,7 @@ namespace API.Controllers
 
         // 4. UPDATE: Cập nhật thông tin vai trò (PUT /api/roles/{id})
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Update(int id, [FromBody] Role updateRole)
         {
             var role = _roles.FirstOrDefault(r => r.Id == id);
@@ -66,6 +72,7 @@ namespace API.Controllers
 
         // 5. DELETE: Xóa vai trò theo ID (DELETE /api/roles/{id})
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             var role = _roles.FirstOrDefault(r => r.Id == id);

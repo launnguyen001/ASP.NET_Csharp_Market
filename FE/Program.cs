@@ -11,7 +11,9 @@ namespace FE
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new FormCategoryManagement());
+
+            // Thay đổi Form khởi chạy đầu tiên là FormLogin thay vì FormCategoryManagement
+            Application.Run(new FormLogin());
         }
     }
 }

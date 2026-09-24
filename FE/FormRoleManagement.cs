@@ -1,18 +1,29 @@
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace FE
 {
     public partial class FormRoleManagement : Form
     {
-        // Kết nối đến API /api/roles (Đảm bảo Port khớp với Backend của bạn: https://localhost:7065)
-        private static readonly HttpClient _client = new HttpClient
-        {
-            BaseAddress = new Uri("https://localhost:7065/api/")
-        };
-
         public FormRoleManagement()
         {
             InitializeComponent();
+        }
+
+        // Bổ sung phương thức cấu hình HttpClient có gắn kèm Token bảo mật
+        private HttpClient GetAuthenticatedClient()
+        {
+            var client = new HttpClient
+            {
+                BaseAddress = new Uri("https://localhost:7065/api/")
+            };
+
+            // Đính kèm Token vào Header theo chuẩn Bearer Authentication
+            if (!string.IsNullOrEmpty(SessionManager.JwtToken))
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", SessionManager.JwtToken);
+            }
+            return client;
         }
 
         // Sự kiện Form vừa bật lên: Tự động tải dữ liệu vai trò từ API lên bảng
@@ -26,12 +37,13 @@ namespace FE
         {
             try
             {
-                var roles = await _client.GetFromJsonAsync<List<RoleDto>>("roles");
+                using var client = GetAuthenticatedClient();
+                var roles = await client.GetFromJsonAsync<List<RoleDto>>("roles");
                 dgvRoles.DataSource = roles;
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi kết nối Server: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Lỗi kết nối Server hoặc lỗi quyền truy cập: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -64,7 +76,8 @@ namespace FE
 
             try
             {
-                var response = await _client.PostAsJsonAsync("roles", newRole);
+                using var client = GetAuthenticatedClient();
+                var response = await client.PostAsJsonAsync("roles", newRole);
                 if (response.IsSuccessStatusCode)
                 {
                     MessageBox.Show("Thêm vai trò mới thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -106,7 +119,8 @@ namespace FE
 
             try
             {
-                var response = await _client.PutAsJsonAsync($"roles/{id}", updateRole);
+                using var client = GetAuthenticatedClient();
+                var response = await client.PutAsJsonAsync($"roles/{id}", updateRole);
                 if (response.IsSuccessStatusCode)
                 {
                     MessageBox.Show("Cập nhật vai trò thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -144,7 +158,8 @@ namespace FE
             {
                 try
                 {
-                    var response = await _client.DeleteAsync($"roles/{id}");
+                    using var client = GetAuthenticatedClient();
+                    var response = await client.DeleteAsync($"roles/{id}");
                     if (response.IsSuccessStatusCode)
                     {
                         MessageBox.Show("Xóa vai trò thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
