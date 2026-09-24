@@ -21,6 +21,7 @@ namespace API.Controllers
 
         // 1. READ: Lấy toàn bộ danh sách nhóm hàng (GET /api/categories)
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetAll()
         {
             // Trả về mã 200 OK kèm theo danh sách JSON
@@ -29,6 +30,7 @@ namespace API.Controllers
 
         // 2. READ: Lấy chi tiết một nhóm hàng theo ID (GET /api/categories/{id})
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetById(int id)
         {
             var cat = _categories.FirstOrDefault(c => c.CategoryId == id);
@@ -42,6 +44,7 @@ namespace API.Controllers
 
         // 3. SEARCH: Tìm kiếm nhóm hàng theo từ khóa qua Query String (GET /api/categories/search?keyword=...)
         [HttpGet("search")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Search([FromQuery] string keyword)
         {
             if (string.IsNullOrWhiteSpace(keyword))
@@ -57,6 +60,7 @@ namespace API.Controllers
 
         // 4. CREATE: Thêm mới nhóm hàng (POST /api/categories)
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create([FromBody] Category newCat)
         {
             if (string.IsNullOrWhiteSpace(newCat.CategoryName))

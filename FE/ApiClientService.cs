@@ -44,5 +44,36 @@ namespace FE
             }
             throw new Exception("Lỗi khi gọi dữ liệu từ Server.");
         }
+
+        // Hàm dịch lỗi ngoại lệ (từ GetFromJsonAsync...) thành thông báo thân thiện
+        public static string GetErrorMessage(Exception ex)
+        {
+            if (ex is HttpRequestException httpEx)
+            {
+                if (httpEx.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                {
+                    return $"Không đủ quyền truy cập! Vai trò hiện tại: {SessionManager.CurrentRole}. Chức năng này chỉ dành cho Admin.";
+                }
+                if (httpEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    return "Phiên làm việc hết hạn hoặc chưa đăng nhập!";
+                }
+            }
+            return "Lỗi kết nối Server: " + ex.Message;
+        }
+
+        // Hàm dịch mã trạng thái phản hồi (dùng cho POST/PUT/DELETE trả về thất bại)
+        public static string GetResponseMessage(HttpResponseMessage response, string fallback)
+        {
+            if (response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+            {
+                return $"Không đủ quyền truy cập! Vai trò hiện tại: {SessionManager.CurrentRole}. Chức năng này chỉ dành cho Admin.";
+            }
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                return "Phiên làm việc hết hạn hoặc chưa đăng nhập!";
+            }
+            return fallback;
+        }
     }
 }
