@@ -29,6 +29,9 @@ namespace FE
         private void InitializeComponent()
         {
             dgvCategories = new DataGridView();
+            colId = new DataGridViewTextBoxColumn();
+            colName = new DataGridViewTextBoxColumn();
+            colDesc = new DataGridViewTextBoxColumn();
             lblId = new Label();
             txtId = new TextBox();
             lblCategoryName = new Label();
@@ -43,6 +46,7 @@ namespace FE
             txtKeyword = new TextBox();
             btnSearch = new Button();
             btnOpenRoles = new Button();
+            btnOpenCustomers = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvCategories).BeginInit();
             SuspendLayout();
             // 
@@ -51,18 +55,44 @@ namespace FE
             dgvCategories.AllowUserToAddRows = false;
             dgvCategories.AllowUserToDeleteRows = false;
             dgvCategories.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            dgvCategories.AutoGenerateColumns = false;
             dgvCategories.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvCategories.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             dgvCategories.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvCategories.Columns.AddRange(new DataGridViewColumn[] { colId, colName, colDesc });
             dgvCategories.Location = new Point(20, 194);
             dgvCategories.MultiSelect = false;
             dgvCategories.Name = "dgvCategories";
             dgvCategories.ReadOnly = true;
             dgvCategories.RowHeadersVisible = false;
             dgvCategories.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvCategories.Size = new Size(760, 229);
+            dgvCategories.Size = new Size(920, 229);
             dgvCategories.TabIndex = 8;
             dgvCategories.CellClick += dgvCategories_CellClick;
+            // 
+            // colId
+            // 
+            colId.DataPropertyName = "CategoryId";
+            colId.HeaderText = "Mã ID";
+            colId.MinimumWidth = 6;
+            colId.Name = "CategoryId";
+            colId.ReadOnly = true;
+            // 
+            // colName
+            // 
+            colName.DataPropertyName = "CategoryName";
+            colName.HeaderText = "Tên nhóm hàng";
+            colName.MinimumWidth = 6;
+            colName.Name = "CategoryName";
+            colName.ReadOnly = true;
+            // 
+            // colDesc
+            // 
+            colDesc.DataPropertyName = "Description";
+            colDesc.HeaderText = "Mô tả";
+            colDesc.MinimumWidth = 6;
+            colDesc.Name = "Description";
+            colDesc.ReadOnly = true;
             // 
             // lblId
             // 
@@ -190,11 +220,23 @@ namespace FE
             btnOpenRoles.UseVisualStyleBackColor = true;
             btnOpenRoles.Click += btnOpenRoles_Click;
             // 
+            // btnOpenCustomers
+            // 
+            btnOpenCustomers.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnOpenCustomers.Location = new Point(784, 13);
+            btnOpenCustomers.Name = "btnOpenCustomers";
+            btnOpenCustomers.Size = new Size(150, 28);
+            btnOpenCustomers.TabIndex = 14;
+            btnOpenCustomers.Text = "Quản lý khách hàng";
+            btnOpenCustomers.UseVisualStyleBackColor = true;
+            btnOpenCustomers.Click += btnOpenCustomers_Click;
+            // 
             // FormCategoryManagement
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 441);
+            ClientSize = new Size(960, 441);
+            Controls.Add(btnOpenCustomers);
             Controls.Add(btnOpenRoles);
             Controls.Add(btnSearch);
             Controls.Add(txtKeyword);
@@ -212,7 +254,7 @@ namespace FE
             Controls.Add(dgvCategories);
             Name = "FormCategoryManagement";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Quản lý nhóm hàng - Mini Supermarket";
+            Text = "Quản lý nhóm món - Tiệm Trà Sữa & Ăn Vặt";
             Load += FormCategoryManagement_Load;
             ((System.ComponentModel.ISupportInitialize)dgvCategories).EndInit();
             ResumeLayout(false);
@@ -239,5 +281,6 @@ namespace FE
         private System.Windows.Forms.TextBox txtKeyword;
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.Button btnOpenRoles;
+        private System.Windows.Forms.Button btnOpenCustomers;
     }
 }

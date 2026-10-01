@@ -197,7 +197,7 @@ namespace FE
             Controls.Add(dgvRoles);
             Name = "FormRoleManagement";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Quản lý vai trò - Mini Supermarket";
+            Text = "Quản lý vai trò - Tiệm Trà Sữa & Ăn Vặt";
             Load += FormRoleManagement_Load;
             ((System.ComponentModel.ISupportInitialize)dgvRoles).EndInit();
             ResumeLayout(false);

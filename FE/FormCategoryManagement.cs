@@ -220,6 +220,13 @@ namespace FE
             formRole.ShowDialog(this);
         }
 
+        // Nút mở màn hình Quản lý khách hàng (bài tập mở rộng Buổi 3 - EF Core)
+        private void btnOpenCustomers_Click(object sender, EventArgs e)
+        {
+            var formCustomer = new FormCustomerManagement();
+            formCustomer.ShowDialog(this);
+        }
+
         // Hàm phụ trợ: Xóa trắng các ô nhập liệu sau khi thao tác xong
         private void ClearInputs()
         {

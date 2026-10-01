@@ -49,15 +49,22 @@
 //app.Run();
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using API.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Cấu hình JWT
 var jwtSecret = builder.Configuration["JwtSettings:Secret"]
     ?? "SupermarketSecretKeyDoAnMonHoc2026SecureString!!";
+
+// Đăng ký DbContext sử dụng SQL Server qua cơ chế Dependency Injection (DI)
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<SupermarketDbContext>(options =>
+    options.UseSqlServer(connectionString));
 
 builder.Services.AddAuthentication(options =>
 {

@@ -106,7 +106,7 @@ namespace FE
             Controls.Add(lblTitle);
             Name = "FormLogin";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Đăng nhập - Mini Supermarket";
+            Text = "Đăng nhập - Tiệm Trà Sữa & Ăn Vặt";
             ResumeLayout(false);
             PerformLayout();
         }
