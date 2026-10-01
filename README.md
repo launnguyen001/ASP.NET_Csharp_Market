@@ -39,10 +39,12 @@ Lau_Market
 │   │   └── RolesController.cs          # CRUD vai trò (bài tập mở rộng, In-Memory)
 │   ├── Data/
 │   │   └── SupermarketDbContext.cs     # DbContext + Data Seeding
-│   ├── Migrations/                      # 3 migration do EF Core sinh ra
+│   ├── Migrations/                      # 5 migration do EF Core sinh ra
 │   │   ├── ..._InitialCreateDatabase.cs
 │   │   ├── ..._AddCustomersTable.cs
 │   │   ├── ..._UpdateCategoriesForTeaShop.cs
+│   │   ├── ..._Seed15CategoriesAndCustomers.cs
+│   │   ├── ..._Seed15Products.cs
 │   │   └── SupermarketDbContextModelSnapshot.cs
 │   ├── Models/
 │   │   ├── Category.cs                 # Nhóm món (quan hệ 1-N với Product)
@@ -110,19 +112,23 @@ public DbSet<Customer>  Customers  { get; set; } = default!;
 
 | Bảng | Số bản ghi mẫu | Nội dung |
 |---|---|---|
-| `Categories` | 5 | Trà Sữa Truyền Thống, Trà Sữa Đá Xay, Trà Trái Cây & Thơm, Bánh Ngọt & Ăn Vặt, Cà Phê & Đồ Uống Khác |
-| `Customers` | 3 | Nguyễn Văn A (Vàng, 150đ), Trần Thị B (Bạc, 50đ), Lê Văn C (Chuẩn, 10đ) |
-| `Products` | 0 | Để trống, sẽ nhập ở buổi sau |
+| `Categories` | **15** | 15 nhóm món tiệm trà sữa & ăn vặt, từ Trà Sữa Truyền Thống, Trà Sữa Phô Mai, Trà Sữa Trân Châu... đến Cà Phê, Nước Ép, Bánh Ngọt, Đồ Ăn Vặt |
+| `Customers` | **15** | 15 thành viên mẫu, phân bậc Chuẩn / Bạc / Vàng / Kim Cương, điểm tích luỹ từ 15đ đến 4100đ |
+| `Products` | **15** | 15 sản phẩm mẫu có barcode `89360111100xx`, giá 25.000đ – 125.000đ, tồn kho 40 – 200 |
+
+Mỗi nhóm món đều có ít nhất một sản phẩm tương ứng qua khoá ngoại `Product.CategoryId`.
 
 ### 3.4. Migration
 
-Đã tạo 3 migration theo từng giai đoạn phát triển:
+Đã tạo 5 migration theo từng giai đoạn phát triển:
 
 | Migration | Nội dung |
 |---|---|
 | `InitialCreateDatabase` | Tạo bảng `Categories` + `Products`, có khoá ngoại `Products.CategoryId → Categories.CategoryId` |
 | `AddCustomersTable` | Tạo bảng `Customers` + nạp 3 khách hàng mẫu |
 | `UpdateCategoriesForTeaShop` | Đổi nội dung 5 nhóm món từ "siêu thị mini" sang tiệm trà sữa |
+| `Seed15CategoriesAndCustomers` | Mở rộng lên **15 nhóm món** và **15 khách hàng** (`UpdateData` cho id cũ + `InsertData` cho id mới) |
+| `Seed15Products` | Nạp **15 sản phẩm** mẫu liên kết với 15 nhóm món |
 
 Lệnh thường dùng:
 
@@ -171,7 +177,27 @@ public virtual Category? Category { get; set; }
 | `CategoryId` | `int` | **Khoá ngoại** trỏ tới `Categories` |
 | `Category` | `Category?` | Navigation property (quan hệ 1-N) |
 
-> `Product` đã khai báo Model nhưng **chưa có Controller** — sẽ làm CRUD ở Buổi 4.
+> `Product` đã có Model + **15 bản ghi seed** nhưng **chưa có Controller** — sẽ làm CRUD ở Buổi 4.
+
+**Bảng seed 15 sản phẩm** (rút gọn — xem đầy đủ trong `SupermarketDbContext.OnModelCreating`):
+
+| ID | Mã vạch | Tên sản phẩm | Giá | Tồn kho | Nhóm món |
+|---|---|---|---|---|---|
+| 1 | 8936011110001 | Trà Sữa Truyền Thống (Size L) | 35.000 | 120 | Trà Sữa Truyền Thống |
+| 2 | 8936011110002 | Trà Sữa Truyền Thống Ít Đường | 35.000 | 95 | Trà Sữa Truyền Thống |
+| 3 | 8936011110003 | Trà Đào Cam Sả (Size M) | 42.000 | 80 | Trà Trái Cây & Thơm |
+| 4 | 8936011110004 | Trà Sữa Đá Xay Dưa Hấu | 45.000 | 75 | Trà Sữa Đá Xay |
+| 5 | 8936011110005 | Trà Sữa Phô Mai Matcha | 52.000 | 60 | Trà Sữa Phô Mai |
+| 6 | 8936011110006 | Trà Sữa Trân Châu Đường | 39.000 | 140 | Trà Sữa Trân Châu |
+| 7 | 8936011110007 | Trà Ô Long Nhật (Size L) | 38.000 | 110 | Trà Ô Long |
+| 8 | 8936011110008 | Trà Sen Nóng | 30.000 | 65 | Trà Lài & Trà Sen |
+| 9 | 8936011110009 | Cà Phê Đen Đá | 25.000 | 200 | Cà Phê |
+| 10 | 8936011110010 | Bạc Xỉu | 30.000 | 175 | Cà Phê |
+| 11 | 8936011110011 | Cà Phê Arabica Đắk Lắk 100g | 125.000 | 40 | Cà Phê Đặc Sản |
+| 12 | 8936011110012 | Nước Cam Ép Tươi 500ml | 28.000 | 90 | Nước Ép Trái Cây |
+| 13 | 8936011110013 | Sữa Tươi UHT 1L | 32.000 | 130 | Sữa Tươi & Sữa Chua |
+| 14 | 8936011110014 | Bánh Mì Chà Nướng | 22.000 | 70 | Bánh Ngọt |
+| 15 | 8936011110015 | Bánh Mì Trứng Ống Laflin | 30.000 | 85 | Bánh Mì & Bánh Tráng Miệng |
 
 ### 4.3. `Customer` — Khách hàng thành viên (MỚI ở Buổi 3)
 
@@ -223,9 +249,11 @@ Tài khoản mẫu để đăng nhập:
 |---|---|
 | `AuthController` | Không cần token (endpoint công khai) |
 | `CategoriesController`, `CustomersController`, `RolesController` | `[Authorize]` — phải có token hợp lệ |
-| `GET /*/admin-dashboard` | `[Authorize(Roles = "Admin")]` — chỉ Admin |
-| `GET /*/staff-pos` | `[Authorize(Roles = "Admin,Cashier")]` — nhân viên |
+| `GET /api/categories/admin-dashboard` | `[Authorize(Roles = "Admin")]` — chỉ Admin |
+| `GET /api/categories/staff-pos` | `[Authorize(Roles = "Admin,Cashier")]` — nhân viên |
 | `POST`, `PUT`, `DELETE` | `[Authorize(Roles = "Admin")]` — chỉ Admin được ghi/xoá |
+
+> Endpoint demo `admin-dashboard` và `staff-pos` chỉ còn ở `CategoriesController`. Bản sao ở `CustomersController` đã bị xoá vì URL `/api/customers/staff-pos` gây hiểu nhầm là màn hình POS của khách hàng.
 
 > Khóa bí mật JWT lấy từ `appsettings.json` → `JwtSettings:Secret`, token sống **2 giờ**.
 
@@ -265,8 +293,6 @@ Tài khoản mẫu để đăng nhập:
 | `GET` | `/api/customers` | Lấy toàn bộ danh sách |
 | `GET` | `/api/customers/{id}` | Lấy chi tiết theo ID |
 | `GET` | `/api/customers/search?keyword=...` | Tìm theo **tên** hoặc **số điện thoại** |
-| `GET` | `/api/customers/admin-dashboard` | Chỉ Admin |
-| `GET` | `/api/customers/staff-pos` | Nhân viên (Admin, Cashier) |
 | `POST` | `/api/customers` | Thêm khách hàng *(Admin)* |
 | `PUT` | `/api/customers/{id}` | Cập nhật *(Admin)* |
 | `DELETE` | `/api/customers/{id}` | Xóa *(Admin)* |
@@ -306,8 +332,8 @@ Truy cập: `https://localhost:7065/swagger`
 
 1. Gọi `GET /api/customers` khi chưa đăng nhập → **401 Unauthorized**.
 2. `POST /api/auth/login` với `cashier/123456` → copy token.
-3. Bấm **Authorize**, dán `Bearer <token>` → `GET /api/customers/staff-pos` → **200 OK**; `GET /api/customers/admin-dashboard` → **403 Forbidden**.
-4. Với 3 khách hàng đã seed sẵn, `GET /api/customers` trả về đúng **3 bản ghi** — chứng minh dữ liệu đã nằm trong SQL Server, không còn là `static List`.
+3. Bấm **Authorize**, dán `Bearer <token>` → `GET /api/categories/staff-pos` → **200 OK**; `GET /api/categories/admin-dashboard` → **403 Forbidden**.
+4. `GET /api/customers` trả về đúng **15 bản ghi**, `GET /api/categories` trả về **15 nhóm món** — chứng minh dữ liệu đã nằm trong SQL Server, không còn là `static List`.
 
 ---
 
@@ -422,8 +448,8 @@ dotnet run --project FE
 
 ### Trình tự kiểm thử
 
-1. **Kiểm tra DB**: mở SSMS, truy vấn `SELECT * FROM Customers;` → phải thấy 3 bản ghi mẫu.
-2. **Kiểm tra Swagger**: gọi `/api/customers` không token → 401; login `admin/123456` → lấy token; bấm Authorize dán `Bearer <token>`; thử `staff-pos` (200) và `admin-dashboard`.
+1. **Kiểm tra DB**: mở SSMS, truy vấn `SELECT COUNT(*) FROM Customers;`, `FROM Categories;`, `FROM Products;` → mỗi bảng phải trả về **15**.
+2. **Kiểm tra Swagger**: gọi `/api/customers` không token → 401; login `admin/123456` → lấy token; bấm Authorize dán `Bearer <token>`; thử `/api/categories/staff-pos` (200) và `/api/categories/admin-dashboard`.
 3. **Kiểm tra WinForms**: đăng nhập bằng `cashier/123456` → mở form quản lý nhóm món → bấm nút **"Quản lý khách hàng"** → thử Thêm / Sửa / Xóa / Tìm kiếm.
 4. **Kiểm tra phân quyền**: đăng nhập bằng `cashier/123456` rồi thử Thêm khách hàng → API trả **403 Forbidden**; đổi sang `admin/123456` → thành công.
 

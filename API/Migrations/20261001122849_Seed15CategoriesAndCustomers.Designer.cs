@@ -3,6 +3,7 @@ using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(SupermarketDbContext))]
-    partial class SupermarketDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261001122849_Seed15CategoriesAndCustomers")]
+    partial class Seed15CategoriesAndCustomers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -339,143 +342,6 @@ namespace API.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
-
-                    b.HasData(
-                        new
-                        {
-                            ProductId = 1,
-                            Barcode = "8936011110001",
-                            CategoryId = 1,
-                            Price = 35000m,
-                            ProductName = "Trà Sữa Truyền Thống (Size L)",
-                            StockQuantity = 120
-                        },
-                        new
-                        {
-                            ProductId = 2,
-                            Barcode = "8936011110002",
-                            CategoryId = 1,
-                            Price = 35000m,
-                            ProductName = "Trà Sữa Truyền Thống Ít Đường",
-                            StockQuantity = 95
-                        },
-                        new
-                        {
-                            ProductId = 3,
-                            Barcode = "8936011110003",
-                            CategoryId = 3,
-                            Price = 42000m,
-                            ProductName = "Trà Đào Cam Sả (Size M)",
-                            StockQuantity = 80
-                        },
-                        new
-                        {
-                            ProductId = 4,
-                            Barcode = "8936011110004",
-                            CategoryId = 2,
-                            Price = 45000m,
-                            ProductName = "Trà Sữa Đá Xay Dưa Hấu",
-                            StockQuantity = 75
-                        },
-                        new
-                        {
-                            ProductId = 5,
-                            Barcode = "8936011110005",
-                            CategoryId = 4,
-                            Price = 52000m,
-                            ProductName = "Trà Sữa Phô Mai Matcha",
-                            StockQuantity = 60
-                        },
-                        new
-                        {
-                            ProductId = 6,
-                            Barcode = "8936011110006",
-                            CategoryId = 5,
-                            Price = 39000m,
-                            ProductName = "Trà Sữa Trân Châu Đường",
-                            StockQuantity = 140
-                        },
-                        new
-                        {
-                            ProductId = 7,
-                            Barcode = "8936011110007",
-                            CategoryId = 6,
-                            Price = 38000m,
-                            ProductName = "Trà Ô Long Nhật (Size L)",
-                            StockQuantity = 110
-                        },
-                        new
-                        {
-                            ProductId = 8,
-                            Barcode = "8936011110008",
-                            CategoryId = 7,
-                            Price = 30000m,
-                            ProductName = "Trà Sen Nóng",
-                            StockQuantity = 65
-                        },
-                        new
-                        {
-                            ProductId = 9,
-                            Barcode = "8936011110009",
-                            CategoryId = 8,
-                            Price = 25000m,
-                            ProductName = "Cà Phê Đen Đá",
-                            StockQuantity = 200
-                        },
-                        new
-                        {
-                            ProductId = 10,
-                            Barcode = "8936011110010",
-                            CategoryId = 8,
-                            Price = 30000m,
-                            ProductName = "Bạc Xỉu",
-                            StockQuantity = 175
-                        },
-                        new
-                        {
-                            ProductId = 11,
-                            Barcode = "8936011110011",
-                            CategoryId = 9,
-                            Price = 125000m,
-                            ProductName = "Cà Phê Arabica Đắk Lắk 100g",
-                            StockQuantity = 40
-                        },
-                        new
-                        {
-                            ProductId = 12,
-                            Barcode = "8936011110012",
-                            CategoryId = 10,
-                            Price = 28000m,
-                            ProductName = "Nước Cam Ép Tươi 500ml",
-                            StockQuantity = 90
-                        },
-                        new
-                        {
-                            ProductId = 13,
-                            Barcode = "8936011110013",
-                            CategoryId = 11,
-                            Price = 32000m,
-                            ProductName = "Sữa Tươi UHT 1L",
-                            StockQuantity = 130
-                        },
-                        new
-                        {
-                            ProductId = 14,
-                            Barcode = "8936011110014",
-                            CategoryId = 12,
-                            Price = 22000m,
-                            ProductName = "Bánh Mì Chà Nướng",
-                            StockQuantity = 70
-                        },
-                        new
-                        {
-                            ProductId = 15,
-                            Barcode = "8936011110015",
-                            CategoryId = 13,
-                            Price = 30000m,
-                            ProductName = "Bánh Mì Trứng Ống Laflin",
-                            StockQuantity = 85
-                        });
                 });
 
             modelBuilder.Entity("API.Models.Product", b =>

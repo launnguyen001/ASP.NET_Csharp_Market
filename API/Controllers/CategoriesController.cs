@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using API.Data;
@@ -103,16 +102,17 @@ namespace API.Controllers
                 return NotFound(new { message = "Không tìm thấy nhóm hàng cần xóa!" });
             }
 
-            _context.Categories.Remove(cat);
-            try
+            // Kiểm tra sản phẩm liên kết TRƯỚC khi xóa.
+            // Nếu để SQL Server ném lỗi khoá ngoại, DbContext sẽ giữ entity ở trạng thái Deleted
+            // và mọi SaveChanges sau đó đều thất bại.
+            var hasProducts = await _context.Products.AnyAsync(p => p.CategoryId == id);
+            if (hasProducts)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                // Nhóm hàng đang có sản phẩm liên kết nên SQL Server chặn xóa (khoá ngoại)
                 return BadRequest(new { message = "Nhóm hàng đang có sản phẩm, không thể xóa!" });
             }
+
+            _context.Categories.Remove(cat);
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
