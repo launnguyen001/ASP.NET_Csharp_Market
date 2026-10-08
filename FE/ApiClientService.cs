@@ -11,6 +11,13 @@ namespace FE
             BaseAddress = new Uri("https://localhost:7065/api/") // nhớ chỉnh port phù hợp
         };
 
+        // HttpClient dùng chung cho các Form con (FormPOS, FormProductManagement, ...)
+        // Tự động mang Bearer Token sau khi đăng nhập thành công
+        public static readonly HttpClient Client = new HttpClient
+        {
+            BaseAddress = new Uri("https://localhost:7065/api/")
+        };
+
         // Hàm gọi API đăng nhập lấy Token
         public static async Task<bool> LoginAsync(string username, string password)
         {
@@ -23,9 +30,23 @@ namespace FE
                 using var doc = JsonDocument.Parse(jsonString);
                 SessionManager.JwtToken = doc.RootElement.GetProperty("token").GetString() ?? string.Empty;
                 SessionManager.CurrentRole = doc.RootElement.GetProperty("role").GetString() ?? string.Empty;
+                SessionManager.CurrentUsername = doc.RootElement.TryGetProperty("username", out var u) ? u.GetString() ?? username : username;
+                SessionManager.CurrentFullName = doc.RootElement.TryGetProperty("fullName", out var f) ? f.GetString() ?? username : username;
+
+                // Gắn Bearer Token vào HttpClient dùng chung cho toàn bộ Form con
+                Client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", SessionManager.JwtToken);
                 return true;
             }
             return false;
+        }
+
+        // Hàm xóa phiên đăng xuất trên HttpClient dùng chung
+        public static void ClearSession()
+        {
+            SessionManager.Clear();
+            Client.DefaultRequestHeaders.Authorization = null;
+            _client.DefaultRequestHeaders.Authorization = null;
         }
 
         // Hàm gọi API lấy dữ liệu có gắn kèm Bearer Token bảo mật

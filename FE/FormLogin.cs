@@ -29,11 +29,20 @@ namespace FE
                 {
                     MessageBox.Show($"Đăng nhập thành công với quyền: {SessionManager.CurrentRole}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    // Mở Form quản lý chính (FormCategoryManagement) và ẩn Form đăng nhập đi
-                    FormCategoryManagement mainForm = new FormCategoryManagement();
-                    this.Hide();
-                    mainForm.ShowDialog();
-                    this.Close(); // Đóng hẳn ứng dụng khi form chính tắt
+                    // Mở màn hình điều khiển trung tâm FormMainShell (khung đơn Single-Form)
+                    // Khi người dùng đăng xuất, ShowDialog trả về và hiện lại form đăng nhập
+                    using (FormMainShell shell = new FormMainShell())
+                    {
+                        this.Hide();
+                        shell.ShowDialog();
+                    }
+
+                    // Quay lại đây nghĩa là phiên làm việc đã kết thúc (đăng xuất)
+                    // → Dọn dẹp và sẵn sàng cho lần đăng nhập tiếp theo
+                    ApiClientService.ClearSession();
+                    txtPass.Clear();
+                    txtUser.Focus();
+                    this.Show();
                 }
                 else
                 {
@@ -44,6 +53,11 @@ namespace FE
             {
                 MessageBox.Show("Lỗi kết nối đến Server: " + ex.Message, "Lỗi hệ thống", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void FormLogin_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

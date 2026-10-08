@@ -41,6 +41,7 @@ namespace FE
                 // Gửi request GET tới endpoint "categories", tự động giải tuần tự hóa chuỗi JSON thành List<CategoryDto>
                 var categories = await client.GetFromJsonAsync<List<CategoryDto>>("categories");
                 dgvCategories.DataSource = categories; // Gán nguồn dữ liệu cho bảng hiển thị
+                UpdateCountLabel(categories?.Count ?? 0);
             }
             catch (Exception ex)
             {
@@ -184,6 +185,21 @@ namespace FE
         // Nút TÌM KIẾM (SEARCH): Gọi API lọc danh mục theo từ khóa Query String
         private async void btnSearch_Click(object sender, EventArgs e)
         {
+            await SearchAsync();
+        }
+
+        // Phím Enter trong ô tìm kiếm cũng kích hoạt tìm kiếm
+        private async void txtKeyword_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true; // Không để tiếng "ding" khi bấm Enter
+                await SearchAsync();
+            }
+        }
+
+        private async Task SearchAsync()
+        {
             string keyword = txtKeyword.Text.Trim();
             if (string.IsNullOrEmpty(keyword))
             {
@@ -197,6 +213,7 @@ namespace FE
                 // Gọi API dạng: GET /api/categories/search?keyword=abc
                 var result = await client.GetFromJsonAsync<List<CategoryDto>>($"categories/search?keyword={Uri.EscapeDataString(keyword)}");
                 dgvCategories.DataSource = result;
+                UpdateCountLabel(result?.Count ?? 0);
             }
             catch (Exception ex)
             {
@@ -208,23 +225,16 @@ namespace FE
                 }
                 else
                 {
+                    UpdateCountLabel(0);
                     MessageBox.Show("Không tìm thấy kết quả phù hợp!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
 
-        // Nút mở màn hình Quản lý vai trò (bài tập mở rộng)
-        private void btnOpenRoles_Click(object sender, EventArgs e)
+        // Cập nhật nhãn đếm tổng số danh mục đang hiển thị
+        private void UpdateCountLabel(int count)
         {
-            var formRole = new FormRoleManagement();
-            formRole.ShowDialog(this);
-        }
-
-        // Nút mở màn hình Quản lý khách hàng (bài tập mở rộng Buổi 3 - EF Core)
-        private void btnOpenCustomers_Click(object sender, EventArgs e)
-        {
-            var formCustomer = new FormCustomerManagement();
-            formCustomer.ShowDialog(this);
+            lblCount.Text = $"Tổng: {count} danh mục";
         }
 
         // Hàm phụ trợ: Xóa trắng các ô nhập liệu sau khi thao tác xong
@@ -233,16 +243,6 @@ namespace FE
             txtId.Text = "";
             txtCategoryName.Text = "";
             txtDescription.Text = "";
-        }
-
-        private void lblCategoryName_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void groupBox1_Enter(object sender, EventArgs e)
-        {
-
         }
     }
 

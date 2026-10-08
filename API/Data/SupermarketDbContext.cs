@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using API.Models;
+using API.Helpers;
 
 namespace API.Data
 {
@@ -12,11 +13,58 @@ namespace API.Data
         public DbSet<Category> Categories { get; set; } = default!;
         public DbSet<Product> Products { get; set; } = default!;
         public DbSet<Customer> Customers { get; set; } = default!;
+        public DbSet<User> Users { get; set; } = default!;
+        public DbSet<Order> Orders { get; set; } = default!;
+        public DbSet<OrderItem> OrderItems { get; set; } = default!;
 
         // Cấu hình dữ liệu mồi ban đầu (Data Seeding)
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // Tên đăng nhập phải là duy nhất trên toàn hệ thống
+            modelBuilder.Entity<User>().HasIndex(u => u.Username).IsUnique();
+
+            // Một hóa đơn có nhiều dòng sản phẩm; xóa hóa đơn thì xóa luôn các dòng chi tiết
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(oi => oi.Order)
+                .WithMany(o => o.Items)
+                .HasForeignKey(oi => oi.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Chi tiết hóa đơn tham chiếu sản phẩm: không cho xóa sản phẩm đã từng bán
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(oi => oi.Product)
+                .WithMany()
+                .HasForeignKey(oi => oi.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Khách hàng thành viên: xóa khách thì giữ lại hóa đơn (bỏ liên kết)
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Customer)
+                .WithMany()
+                .HasForeignKey(o => o.CustomerId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // Nạp sẵn 15 tài khoản nhân viên mẫu phân quyền theo bảng kiểm thử (Buổi 4)
+            string defaultHash = PasswordHasher.Hash("123456");
+            modelBuilder.Entity<User>().HasData(
+                new User { UserId = 1, Username = "admin01", PasswordHash = defaultHash, FullName = "Nguyễn Quản Trị", Email = "admin01@minimart.vn", Role = "Admin", IsActive = true },
+                new User { UserId = 2, Username = "admin02", PasswordHash = defaultHash, FullName = "Trần Giám Đốc", Email = "admin02@minimart.vn", Role = "Admin", IsActive = true },
+                new User { UserId = 3, Username = "cashier01", PasswordHash = defaultHash, FullName = "Lê Thu Ngân", Email = "cashier01@minimart.vn", Role = "Cashier", IsActive = true },
+                new User { UserId = 4, Username = "cashier02", PasswordHash = defaultHash, FullName = "Phạm Bán Hàng", Email = "cashier02@minimart.vn", Role = "Cashier", IsActive = true },
+                new User { UserId = 5, Username = "cashier03", PasswordHash = defaultHash, FullName = "Hoàng Thu Ngân", Email = "cashier03@minimart.vn", Role = "Cashier", IsActive = true },
+                new User { UserId = 6, Username = "cashier04", PasswordHash = defaultHash, FullName = "Vũ Thị Quầy", Email = "cashier04@minimart.vn", Role = "Cashier", IsActive = true },
+                new User { UserId = 7, Username = "cashier05", PasswordHash = defaultHash, FullName = "Đỗ Bán Lẻ", Email = "cashier05@minimart.vn", Role = "Cashier", IsActive = true },
+                new User { UserId = 8, Username = "ware01", PasswordHash = defaultHash, FullName = "Ngô Quản Kho", Email = "ware01@minimart.vn", Role = "Warehouse", IsActive = true },
+                new User { UserId = 9, Username = "ware02", PasswordHash = defaultHash, FullName = "Bùi Kiểm Kê", Email = "ware02@minimart.vn", Role = "Warehouse", IsActive = true },
+                new User { UserId = 10, Username = "ware03", PasswordHash = defaultHash, FullName = "Dương Thủ Kho", Email = "ware03@minimart.vn", Role = "Warehouse", IsActive = true },
+                new User { UserId = 11, Username = "ware04", PasswordHash = defaultHash, FullName = "Lý Nhập Hàng", Email = "ware04@minimart.vn", Role = "Warehouse", IsActive = true },
+                new User { UserId = 12, Username = "admin_backup", PasswordHash = defaultHash, FullName = "Đặng Hỗ Trợ", Email = "admin_backup@minimart.vn", Role = "Admin", IsActive = true },
+                new User { UserId = 13, Username = "cashier06", PasswordHash = defaultHash, FullName = "Hồ Ca Chiều", Email = "cashier06@minimart.vn", Role = "Cashier", IsActive = true },
+                new User { UserId = 14, Username = "ware05", PasswordHash = defaultHash, FullName = "Trương Vận Chuyển", Email = "ware05@minimart.vn", Role = "Warehouse", IsActive = true },
+                new User { UserId = 15, Username = "supervisor", PasswordHash = defaultHash, FullName = "Mai Giám Sát", Email = "supervisor@minimart.vn", Role = "Admin", IsActive = true }
+            );
 
             // Nạp sẵn 15 nhóm món của tiệm trà sữa & ăn vặt vào SQL Server
             modelBuilder.Entity<Category>().HasData(

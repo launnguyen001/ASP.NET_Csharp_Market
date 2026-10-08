@@ -42,7 +42,7 @@ namespace FE
             lblTitle.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
             lblTitle.Location = new Point(110, 30);
             lblTitle.Name = "lblTitle";
-            lblTitle.Size = new Size(289, 25);
+            lblTitle.Size = new Size(232, 25);
             lblTitle.TabIndex = 0;
             lblTitle.Text = "ĐĂNG NHẬP HỆ THỐNG\n";
             lblTitle.TextAlign = ContentAlignment.MiddleCenter;
@@ -52,7 +52,7 @@ namespace FE
             lblUser.AutoSize = true;
             lblUser.Location = new Point(50, 105);
             lblUser.Name = "lblUser";
-            lblUser.Size = new Size(63, 15);
+            lblUser.Size = new Size(60, 15);
             lblUser.TabIndex = 1;
             lblUser.Text = "Tài khoản:";
             // 
@@ -68,7 +68,7 @@ namespace FE
             lblPass.AutoSize = true;
             lblPass.Location = new Point(50, 145);
             lblPass.Name = "lblPass";
-            lblPass.Size = new Size(62, 15);
+            lblPass.Size = new Size(60, 15);
             lblPass.TabIndex = 3;
             lblPass.Text = "Mật khẩu:";
             // 
@@ -107,6 +107,7 @@ namespace FE
             Name = "FormLogin";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Đăng nhập - Tiệm Trà Sữa & Ăn Vặt";
+            Load += FormLogin_Load;
             ResumeLayout(false);
             PerformLayout();
         }
