@@ -23,9 +23,9 @@ namespace FE
             try
             {
                 // Gọi API POST /api/auth/login để lấy Token và lưu vào SessionManager
-                bool success = await ApiClientService.LoginAsync(username, password);
+                LoginResult result = await ApiClientService.LoginAsync(username, password);
 
-                if (success)
+                if (result.Success)
                 {
                     MessageBox.Show($"Đăng nhập thành công với quyền: {SessionManager.CurrentRole}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -46,7 +46,8 @@ namespace FE
                 }
                 else
                 {
-                    MessageBox.Show("Sai tài khoản hoặc mật khẩu!", "Đăng nhập thất bại", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // Hiển thị đúng lý do do Server trả về (sai mật khẩu, tài khoản bị khóa...)
+                    MessageBox.Show(result.ErrorMessage, "Đăng nhập thất bại", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)

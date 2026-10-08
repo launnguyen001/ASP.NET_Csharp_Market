@@ -19,7 +19,8 @@ namespace FE
         };
 
         // Hàm gọi API đăng nhập lấy Token
-        public static async Task<bool> LoginAsync(string username, string password)
+        // Trả về LoginResult để giữ nguyên thông báo lỗi (sai mật khẩu / tài khoản bị khóa...) do Server trả về
+        public static async Task<LoginResult> LoginAsync(string username, string password)
         {
             var loginObj = new { Username = username, Password = password };
             var response = await _client.PostAsJsonAsync("auth/login", loginObj);
@@ -36,9 +37,29 @@ namespace FE
                 // Gắn Bearer Token vào HttpClient dùng chung cho toàn bộ Form con
                 Client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", SessionManager.JwtToken);
-                return true;
+                return new LoginResult { Success = true };
             }
-            return false;
+
+            // Đọc message lỗi chi tiết do Server trả về (400/401): sai mật khẩu, tài khoản bị khóa...
+            return new LoginResult { Success = false, ErrorMessage = await ReadServerMessageAsync(response) };
+        }
+
+        // Đọc trường "message" trong body JSON lỗi của Server; không đọc được thì dùng thông báo mặc định
+        private static async Task<string> ReadServerMessageAsync(HttpResponseMessage response, string fallback = "Sai tài khoản hoặc mật khẩu!")
+        {
+            try
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(json);
+                if (doc.RootElement.TryGetProperty("message", out var msg)
+                    && msg.ValueKind == JsonValueKind.String
+                    && !string.IsNullOrWhiteSpace(msg.GetString()))
+                {
+                    return msg.GetString()!;
+                }
+            }
+            catch { /* Body không phải JSON hợp lệ → giữ thông báo mặc định */ }
+            return fallback;
         }
 
         // Hàm xóa phiên đăng xuất trên HttpClient dùng chung
@@ -96,5 +117,12 @@ namespace FE
             }
             return fallback;
         }
+    }
+
+    // Kết quả đăng nhập: vừa báo thành công/thất bại, vừa giữ thông báo lỗi cụ thể từ Server
+    public class LoginResult
+    {
+        public bool Success { get; set; }
+        public string ErrorMessage { get; set; } = string.Empty;
     }
 }
